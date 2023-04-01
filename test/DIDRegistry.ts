@@ -15,7 +15,7 @@ describe("DIDRegistry", function () {
 
   describe("DID Operations", function () {
     const did = "did:example:1234567890";
-    const publicKey = "publicKeyExample";
+    const publicKey = ethers.constants.AddressZero;
     const authentication = "authenticationExample";
     const serviceEndpoint = "serviceEndpointExample";
 
@@ -36,7 +36,7 @@ describe("DIDRegistry", function () {
 
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
 
-      const newPublicKey = "newPublicKeyExample";
+      const newPublicKey = ethers.constants.AddressZero;
       const newAuthentication = "newAuthenticationExample";
       const newServiceEndpoint = "newServiceEndpointExample";
 
@@ -53,7 +53,7 @@ describe("DIDRegistry", function () {
 
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
 
-      const newPublicKey = "newPublicKeyExample";
+      const newPublicKey = ethers.constants.AddressZero;
       const newAuthentication = "newAuthenticationExample";
       const newServiceEndpoint = "newServiceEndpointExample";
 
@@ -79,57 +79,55 @@ describe("DIDRegistry", function () {
       await expect(didRegistry.connect(otherAccount).deleteDID(did)).to.be.revertedWith("Not authorized");
     });
 
-    it("Could get DID by Id", async () => {
-      const { didRegistry, otherAccount } = await loadFixture(deployDIDRegistryFixture);
-
+    it("Should return the correct DID when called with an existing ID", async function () {
+      const { didRegistry, owner } = await loadFixture(deployDIDRegistryFixture);
       const did = "did:example:123";
-      const publicKey = "publicKey";
+      const publicKey = ethers.constants.AddressZero;
       const authentication = "authentication";
       const serviceEndpoint = "serviceEndpoint";
-
+    
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
-
-      const didById = await didRegistry.getDIDById(1);
-      expect(didById).to.equal(did);
+    
+      const id = 1;
+      const didResult = await didRegistry.getDIDById(id);
+    
+      expect(didResult).to.equal(did);
     });
-
     
     it("Should return the correct DIDDocument when called with an existing ID", async function () {
       const { didRegistry, owner } = await loadFixture(deployDIDRegistryFixture);
-
+    
       const did = "did:example:123";
-      const publicKey = "publicKey";
+      const publicKey = ethers.constants.AddressZero;
       const authentication = "authentication";
       const serviceEndpoint = "serviceEndpoint";
-
+    
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
-
+    
       const id = 1;
       const didDocument = await didRegistry.getDIDDocumentById(id);
-
+    
       expect(didDocument.id).to.equal(id);
       expect(didDocument.owner).to.equal(owner.address);
       expect(didDocument.publicKey).to.equal(publicKey);
       expect(didDocument.authentication).to.equal(authentication);
       expect(didDocument.serviceEndpoint).to.equal(serviceEndpoint);
     });
-
+    
     it("Should return an empty DIDDocument when called with a non-existing ID", async function () {
-      const { didRegistry, otherAccount } = await loadFixture(deployDIDRegistryFixture);
-
+      const { didRegistry } = await loadFixture(deployDIDRegistryFixture);
+    
       const nonExistingId = 999;
-      const emptyAddress = "0x0000000000000000000000000000000000000000";
+      const emptyAddress = ethers.constants.AddressZero;
       const emptyString = "";
-
+    
       const didDocument = await didRegistry.getDIDDocumentById(nonExistingId);
-
+    
       expect(didDocument.id).to.equal(0);
       expect(didDocument.owner).to.equal(emptyAddress);
-      expect(didDocument.publicKey).to.equal(emptyString);
+      expect(didDocument.publicKey).to.equal(emptyAddress);
       expect(didDocument.authentication).to.equal(emptyString);
       expect(didDocument.serviceEndpoint).to.equal(emptyString);
-    });
-
-
+    });    
   });
 });

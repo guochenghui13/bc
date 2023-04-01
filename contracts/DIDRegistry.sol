@@ -6,7 +6,7 @@ contract DIDRegistry {
     struct DIDDocument {
         uint256 id;
         address owner;
-        string publicKey;
+        address publicKey;
         string authentication;
         string serviceEndpoint;
     }
@@ -36,7 +36,7 @@ contract DIDRegistry {
     // 创建DID文档
     function createDID(
         string memory did,
-        string memory publicKey,
+        address publicKey,
         string memory authentication,
         string memory serviceEndpoint
     ) public {
@@ -61,7 +61,7 @@ contract DIDRegistry {
     // 更新DID文档
     function updateDID(
         string memory did,
-        string memory publicKey,
+        address publicKey,
         string memory authentication,
         string memory serviceEndpoint
     ) public {

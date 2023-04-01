@@ -1,3 +1,4 @@
+import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
@@ -22,7 +23,8 @@ describe("SignedNFT", function () {
 
       // 创建一个DID以供测试
       const did = "did:example:123456789abcdefghi";
-      const publicKey = verifier.address; // 使用verifier的地址作为公钥
+      const publicKey = verifier.address;  
+
       const authentication = "authentication";
       const serviceEndpoint = "serviceEndpoint";
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
@@ -50,7 +52,7 @@ describe("SignedNFT", function () {
     
       // 创建一个DID以供测试
       const did = "did:example:123456789abcdefghi";
-      const publicKey = verifier.address; // 使用verifier的地址作为公钥
+      const publicKey = await verifier.getAddress();
       const authentication = "authentication";
       const serviceEndpoint = "serviceEndpoint";
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);

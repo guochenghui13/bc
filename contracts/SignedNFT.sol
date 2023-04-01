@@ -28,7 +28,8 @@ contract SignedNFT is ERC721URIStorage {
         (address signer, ECDSA.RecoverError error) = ethSignedMessageHash.tryRecover(signature);
 
         require(error == ECDSA.RecoverError.NoError, "Invalid signature");
-        require(signer == address(uint160(uint256(keccak256(abi.encodePacked(didDocument.publicKey))))), "Invalid signer"); // 检查签名者是否与DID文档中的公钥相同
+
+        require(signer == didDocument.publicKey, "Invalid signer"); // 检查签名者是否与DID文档中的公钥对应的地址相同
 
         _tokenIdCounter += 1;
         uint256 tokenId = _tokenIdCounter;
