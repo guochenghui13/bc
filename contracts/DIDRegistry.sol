@@ -14,6 +14,9 @@ contract DIDRegistry {
     // 使用DID作为键，将其映射到DID文档
     mapping(string => DIDDocument) public didDocuments;
 
+    // 使用ID作为键，将其映射到DID
+    mapping(uint256 => string) public dids;
+
     // 自增ID
     uint256 private nextID;
 
@@ -50,6 +53,8 @@ contract DIDRegistry {
             serviceEndpoint: serviceEndpoint
         });
 
+        dids[id] = did;
+
         emit DIDCreated(did, msg.sender, id);
     }
 
@@ -76,5 +81,10 @@ contract DIDRegistry {
         delete didDocuments[did];
 
         emit DIDDeleted(did, msg.sender);
+    }
+
+    // 根据ID获取DID
+    function getDIDById(uint256 id) public view returns (string memory) {
+        return dids[id];
     }
 }

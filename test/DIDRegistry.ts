@@ -78,5 +78,19 @@ describe("DIDRegistry", function () {
       await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
       await expect(didRegistry.connect(otherAccount).deleteDID(did)).to.be.revertedWith("Not authorized");
     });
+
+    it("Could get DID by Id", async () => {
+      const { didRegistry, otherAccount } = await loadFixture(deployDIDRegistryFixture);
+
+      const did = "did:example:123";
+      const publicKey = "publicKey";
+      const authentication = "authentication";
+      const serviceEndpoint = "serviceEndpoint";
+
+      await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
+
+      const didById = await didRegistry.getDIDById(1);
+      expect(didById).to.equal(did);
+    });
   });
 });

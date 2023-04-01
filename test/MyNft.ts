@@ -7,15 +7,20 @@ describe("SignedNFT", function () {
   async function deploySignedNFTFixture() {
     const [owner, user, verifier] = await ethers.getSigners();
 
-    const SignedNFT = await ethers.getContractFactory("SignedNFT");
-    const signedNFT = await SignedNFT.deploy(verifier.address);
+    // 部署DIDRegistry合约
+    const DIDRegistry = await ethers.getContractFactory("DIDRegistry");
+    const didRegistry = await DIDRegistry.deploy();
 
-    return { signedNFT, verifier, user };
+    const SignedNFT = await ethers.getContractFactory("SignedNFT");
+    // 将DIDRegistry合约地址传递给SignedNFT合约
+    const signedNFT = await SignedNFT.deploy(verifier.address, didRegistry.address);
+
+    return { signedNFT, verifier, user, didRegistry };
   }
 
   describe("Minting NFT", function () {
-    it("Should mint NFT when provided with valid signature", async function () {
-      const { signedNFT, verifier, user } = await loadFixture(deploySignedNFTFixture);
+    it("Should mint NFT when provided with valid signature and get DID by ID", async function () {
+      const { signedNFT, verifier, user, didRegistry } = await loadFixture(deploySignedNFTFixture);
 
       const message = "Hello, NFT!";
       const messageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(message));
@@ -26,6 +31,17 @@ describe("SignedNFT", function () {
       const tokenId = 1;
       expect(await signedNFT.ownerOf(tokenId)).to.equal(user.address);
       expect(await signedNFT.tokenURI(tokenId)).to.equal(message);
+
+      // 创建一个DID以供测试
+      const did = "did:example:123456789abcdefghi";
+      const publicKey = "publicKey";
+      const authentication = "authentication";
+      const serviceEndpoint = "serviceEndpoint";
+      await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
+
+      // 调用getDIDById函数并验证返回的DID是否正确
+      const retrievedDid = await signedNFT.getDIDById(1);
+      expect(retrievedDid).to.equal(did);
     });
 
     it("Should fail to mint NFT when provided with invalid signature", async function () {
