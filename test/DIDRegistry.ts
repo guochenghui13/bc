@@ -92,5 +92,44 @@ describe("DIDRegistry", function () {
       const didById = await didRegistry.getDIDById(1);
       expect(didById).to.equal(did);
     });
+
+    
+    it("Should return the correct DIDDocument when called with an existing ID", async function () {
+      const { didRegistry, owner } = await loadFixture(deployDIDRegistryFixture);
+
+      const did = "did:example:123";
+      const publicKey = "publicKey";
+      const authentication = "authentication";
+      const serviceEndpoint = "serviceEndpoint";
+
+      await didRegistry.createDID(did, publicKey, authentication, serviceEndpoint);
+
+      const id = 1;
+      const didDocument = await didRegistry.getDIDDocumentById(id);
+
+      expect(didDocument.id).to.equal(id);
+      expect(didDocument.owner).to.equal(owner.address);
+      expect(didDocument.publicKey).to.equal(publicKey);
+      expect(didDocument.authentication).to.equal(authentication);
+      expect(didDocument.serviceEndpoint).to.equal(serviceEndpoint);
+    });
+
+    it("Should return an empty DIDDocument when called with a non-existing ID", async function () {
+      const { didRegistry, otherAccount } = await loadFixture(deployDIDRegistryFixture);
+
+      const nonExistingId = 999;
+      const emptyAddress = "0x0000000000000000000000000000000000000000";
+      const emptyString = "";
+
+      const didDocument = await didRegistry.getDIDDocumentById(nonExistingId);
+
+      expect(didDocument.id).to.equal(0);
+      expect(didDocument.owner).to.equal(emptyAddress);
+      expect(didDocument.publicKey).to.equal(emptyString);
+      expect(didDocument.authentication).to.equal(emptyString);
+      expect(didDocument.serviceEndpoint).to.equal(emptyString);
+    });
+
+
   });
 });

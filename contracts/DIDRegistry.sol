@@ -87,4 +87,10 @@ contract DIDRegistry {
     function getDIDById(uint256 id) public view returns (string memory) {
         return dids[id];
     }
+
+     // 添加一个函数用于根据ID获取DIDDocument
+    function getDIDDocumentById(uint256 id) public view returns (DIDDocument memory) {
+        string memory did = getDIDById(id);
+        return didDocuments[did];
+    }
 }
